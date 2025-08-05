@@ -46,6 +46,8 @@ function [fit_results,file] = TAB_fit_simple_local(subject,DCM)
         else 
             continue;
         end
+
+
         
         %% 12. Set up model structure
         %==========================================================================
@@ -310,7 +312,6 @@ function [fit_results,file] = TAB_fit_simple_local(subject,DCM)
         break;
         
         
-    end
-        
+    end   
 
 end
