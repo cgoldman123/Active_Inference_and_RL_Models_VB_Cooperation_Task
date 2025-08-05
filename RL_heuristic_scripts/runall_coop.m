@@ -1,0 +1,31 @@
+%Get all IDs
+clear all
+root = 'L:/';
+file_path = [root 'rsmith/wellbeing/data/raw/'];
+
+d = dir(file_path);
+subids = {d([d.isdir]).name}.';
+subids = subids(~ismember(subids, {'.','..'}));
+
+all_subjectids = erase(subids, 'sub-');
+
+%loop through each ID and call main script
+%all_outputs = table();
+all_outputs = [];
+skipped_subjects = {};
+
+for i = 1:length(all_subjectids)
+    subjectid = all_subjectids{i};
+
+    try
+        output = main_script_RL_GK(subjectid);
+        output.subjectid = repmat({subjectid}, height(output), 1);
+        all_outputs = [all_outputs; output];
+    catch ME
+        warning('Skipping subject %s due to error: %s', subjectid, ME.message);
+        skipped_subjects{end+1} = subjectid;
+    end
+end
+
+writetable(all_outputs, fullfile(file_path, 'combined_output.csv'));
+

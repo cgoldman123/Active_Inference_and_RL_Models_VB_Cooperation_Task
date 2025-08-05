@@ -1,5 +1,4 @@
 % Main script for model fitting the cooperation task data using a Reinforcement learning model
-% Grace was here
 dbstop if error
 clear all;
 
@@ -30,7 +29,7 @@ if ispc
     % gamma = information bonus
     % eta = determines how quickly the associability weight changes
 
-    experiment_mode = "prolific";
+    experiment_mode = "local";
     if experiment_mode == "local"
         fit_list = ["BW521"];
     elseif experiment_mode == "prolific"
@@ -55,7 +54,6 @@ elseif isunix
     result_dir = getenv('RESULTS')
     DCM.field = cellstr(strsplit(getenv('FIELD'),','))
     experiment_mode = string(getenv('EXPERIMENT'))
-
 end
 
 addpath([root '/rsmith/all-studies/util/spm12/']);
@@ -64,7 +62,7 @@ addpath([root '/rsmith/all-studies/util/spm12/toolbox/DEM/']);
 for subject = fit_list
 
     DCM.MDP.T = 16; % trials per block
-
+    
     if any(strcmp(DCM.field,'c'))
         DCM.MDP.softmax = 1; % choose whether or not there will be a dynamic softmax, if so, add beta_0 & c to field DO NOT FIT BETA IF SOFTMAX IS ACTIVE
     else
@@ -76,7 +74,7 @@ for subject = fit_list
     else 
         DCM.MDP.forgetting_split_matrix = 0;
     end
-
+    
     if any(contains(DCM.field, 'alpha_win'))
         DCM.MDP.learning_split = 1;
     else 
@@ -88,7 +86,7 @@ for subject = fit_list
     else
         DCM.MDP.assoc = 0;
     end
-
+    
     if DCM.MDP.learning_split == 1 
         DCM.MDP.alpha_win = 0.5;
         DCM.MDP.alpha_neutral = 0.5;
@@ -97,7 +95,7 @@ for subject = fit_list
     elseif DCM.MDP.learning_split == 0
         DCM.MDP.alpha = 0.5; % learning rate if not splitting learning 
     end
-
+    
     if DCM.MDP.forgetting_split_matrix == 1
         DCM.MDP.psi_win = 0.25;
         DCM.MDP.psi_neutral = 0.25;
@@ -106,7 +104,7 @@ for subject = fit_list
     elseif DCM.MDP.forgetting_split_matrix == 0
         DCM.MDP.psi = 0.25;
     end
-
+    
     if DCM.MDP.softmax == 0
         DCM.MDP.beta = 1; % inverse temperature
     elseif DCM.MDP.softmax == 1
@@ -120,7 +118,6 @@ for subject = fit_list
     DCM.MDP.cr = 1; % reward sensitivity
     DCM.MDP.cl = 1; % loss aversion
     DCM.MDP.gamma = 1; % t-t
-
 
 
     if experiment_mode == "local"
@@ -195,7 +192,7 @@ if SIM_PASSED_PARAMETERS
     if DO_MODEL_FREE
         if strcmp(experiment_mode, "prolific")
             mf_results = coop_model_free_20250521(file);
-        elseif strcmp(experiement_mode, "local")
+        elseif strcmp(experiment_mode, "local")
             mf_results = coop_model_free_local_20250701(file);
         end
         result_table = [result_table, struct2table(mf_results)];
